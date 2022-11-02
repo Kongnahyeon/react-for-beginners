@@ -1,59 +1,77 @@
 import { useState, useEffect } from "react";
 
-function App() {
-    // React.useState() = useState()
-    // useState가 반환값으로 array를 준다.
-    const [counter, setValue] = useState(0);
-    const [keyword, setKeyword] = useState("")
-    const onClick = () => setValue((prev) => prev + 1);
-    const onChange = (event) => setKeyword(event.target.value);
-    // const iRunOnlyOnce = () => {
-    //     console.log("i run all the time")
+function Hello() {
+    // function byFn() {
+    //     console.log("bye :(")
     // }
-    // useEffect(iRunOnlyOnce, []);
+    // function hiFn() {
+    //     console.log("created :)");
+    //     return byFn;
+    // }
 
-    useEffect(() => {
-        console.log("i run only once.");
-    }, []);
-    
-    // keyword가 변화할때만 실행이 됨
+    // useEffect(hiFn, []);
     // useEffect(() => {
-    //     if (keyword !== "" && keyword.length > 5){
-    //         console.log("Search for", keyword);
-    //     }
-    // }, [keyword]);
+    //     console.log("created :)"); //컴포넌트가 처음 생성될때만 실행
 
-    // keyword가 변할때마다 실행
-    useEffect (() => {
-        console.log("i run when 'keyword' changes.");
-    }, [keyword]);
+    //     // 컴포넌트가 사라질때 실행되는 것
+    //     return () => console.log("destroyed :(")
+    // }, []);
 
-    // counter가 변할때마다 실행
-    useEffect (() => {
-        console.log("i run when 'counter' changes.");
-    }, [counter]);
+    // 1번 2번 둘다 동일한 코드 익명의 함수를 통해 더 간략하게 작성이 가능
 
-    useEffect (() => {
-        console.log("I run when 'keyword' & 'counter' change.");
-    }, [keyword, counter]);
+    // 1.
+    useEffect(() => {
+        console.log("hi :-)");
+        return () => console.log("bye :-(");
+    }, [])
+
+    // 2.
+    useEffect(function(){
+        console.log("hi :-)");
+        return function() {
+            console.log("bye :-(");
+        }
+    }, []);
+    return <h1>Hello!</h1>;
+}
+
+function App() {
+    const [showing, setShowing] = useState(false);
+
+    //setShowing을 통해 이전 value를 받고, 그 value의 반댓값을 return 함
+    const onClick = () => setShowing(prev => !prev);
+
     return (
         <div>
-            <input value={keyword} onChange={onChange} type="text" placeholder="Search here" />
-            <h1>{counter}</h1>
-            <button onClick={onClick}>click Me</button>
+            {showing ? <Hello /> : null}
+            <button onClick={onClick}>{showing ? "Hide" : "Show"}</button>
         </div>
-    )
+    );
 }
 
 export default App;
 
 /*
-    ** state가 변화할 때 모든 component는 다시 실행이 되고, 모든 코드들이 재실행됨
+    ** {} 는 자바스크립트를 사용할때 쓰는 것 ! 꼭 기억해두기 !
+       () 는 return을 의미 : es6문법
 
-    ** rerender 될때 특정 컴포넌트를 제어하고 싶은 경우 (rerender되어도 다시 실행되지 않도록)
+    ** 컴포넌트는 jsx를 return 해주는 것
 
-        - useEffect = 두 개의 argument를 가지는 function
-                    = 우리 코드가 딱 한번만 실행될 수 있도록 보호를 해줌
-          첫 번째 argument : 딱 한번만 실행하고 싶은 코드
-          두 번째 argument
+    ** 컴포넌트가 destroy 될 때도 코드를 실행할 수 있음
+
+    ** Cleanup function
+        - component가 파괴될 때도 function을 실행하고 싶은 경우
+          function 안에서 return을 해줘야함
+
+        - useEffect(() => {
+                console.log("hi :-)");
+                return () => console.log("bye :-(");
+          }, [])
+
+          -----> return function을 실행시켜서 코드가 삭제될때 or 생성이될때
+                 반대의 경우를 알 수 가 있다. (ex 코드가 실행되는 지점 등등 ...)
+
+    
+    * 리렌더링 > 이전 이펙트 클린업 > 이펙트 실행
+
 */
